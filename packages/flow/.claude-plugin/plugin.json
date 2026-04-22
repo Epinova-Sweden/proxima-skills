@@ -1,0 +1,6 @@
+{
+  "name": "proxima-flow",
+  "description": "Proxima dev lifecycle skills: triage, plan, status, create-pr, track — integrated with Azure DevOps.",
+  "version": "0.1.0",
+  "author": { "name": "Epinova" }
+}

@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://proxima-skills/workflow-config.schema.json",
+  "title": "Proxima Flow workflow config",
+  "description": "Drop this file at .claude/workflow-config.json in your repo to override plugin defaults.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "tracker": {
+      "type": "string",
+      "description": "Which ticket tracker to use. Default: ado.",
+      "enum": ["ado", "github"],
+      "default": "ado"
+    },
+    "ado": {
+      "type": "object",
+      "description": "Azure DevOps connection details. Falls back to `az devops configure` defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "org": {
+          "type": "string",
+          "description": "Organisation URL, e.g. https://dev.azure.com/your-org",
+          "format": "uri"
+        },
+        "project": {
+          "type": "string",
+          "description": "ADO project name"
+        },
+        "repository": {
+          "type": "string",
+          "description": "ADO Git repository name (required for /create-pr)"
+        }
+      }
+    },
+    "github": {
+      "type": "object",
+      "description": "GitHub connection details. Required when tracker is 'github'.",
+      "additionalProperties": false,
+      "properties": {
+        "owner": {
+          "type": "string",
+          "description": "GitHub org or user owning the repo, e.g. epinova"
+        },
+        "repo": {
+          "type": "string",
+          "description": "GitHub repository name, e.g. my-project"
+        }
+      }
+    },
+    "triage": {
+      "type": "object",
+      "description": "Overrides for the /triage skill",
+      "additionalProperties": false,
+      "properties": {
+        "template": {
+          "type": "string",
+          "description": "Path to a custom triage template (relative to repo root). Defaults to the plugin's built-in triage-template.md."
+        },
+        "estimationScale": {
+          "type": "array",
+          "description": "Fibonacci-style effort scale. Must be an ordered array of non-negative integers.",
+          "items": { "type": "integer", "minimum": 0 },
+          "minItems": 2,
+          "default": [0, 1, 2, 3, 5, 8, 13, 21]
+        },
+        "defaultTags": {
+          "type": "array",
+          "description": "Tags always prepended to the generated tag list (e.g. your team name).",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "description": "Overrides for the /plan skill",
+      "additionalProperties": false,
+      "properties": {
+        "estimationScale": {
+          "type": "array",
+          "description": "Effort scale used when re-estimating. Defaults to the triage scale.",
+          "items": { "type": "integer", "minimum": 0 },
+          "minItems": 2
+        }
+      }
+    },
+    "status": {
+      "type": "object",
+      "description": "Overrides for the /status skill",
+      "additionalProperties": false,
+      "properties": {
+        "gitLookbackDays": {
+          "type": "integer",
+          "description": "How many days of git history to consider. Default: 7.",
+          "minimum": 1,
+          "default": 7
+        },
+        "autoTransitionState": {
+          "type": "boolean",
+          "description": "If true, offer to transition the work item state after posting the update. Default: false.",
+          "default": false
+        }
+      }
+    },
+    "createPr": {
+      "type": "object",
+      "description": "Overrides for the /create-pr skill",
+      "additionalProperties": false,
+      "properties": {
+        "targetBranch": {
+          "type": "string",
+          "description": "Branch to target for the PR. Default: main.",
+          "default": "main"
+        },
+        "template": {
+          "type": "string",
+          "description": "Path to a custom PR description template (relative to repo root)."
+        },
+        "draft": {
+          "type": "boolean",
+          "description": "Open PR as a draft. Default: false.",
+          "default": false
+        },
+        "defaultReviewers": {
+          "type": "array",
+          "description": "ADO user emails or IDs to add as reviewers automatically.",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "track": {
+      "type": "object",
+      "description": "Overrides for the /track skill",
+      "additionalProperties": false,
+      "properties": {
+        "defaultType": {
+          "type": "string",
+          "description": "Work item type to create when not specified. Default: Task.",
+          "enum": ["Task", "Bug", "User Story"],
+          "default": "Task"
+        },
+        "defaultState": {
+          "type": "string",
+          "description": "State to set on the created item. Default: Done.",
+          "default": "Done"
+        },
+        "defaultTags": {
+          "type": "array",
+          "description": "Tags always applied to tracked items (e.g. 'unplanned', 'tech-debt').",
+          "items": { "type": "string" },
+          "default": ["unplanned"]
+        },
+        "areaPath": {
+          "type": "string",
+          "description": "ADO area path for the created item (e.g. YourProject\\TeamArea)."
+        },
+        "iterationPath": {
+          "type": "string",
+          "description": "ADO iteration path for the created item (e.g. YourProject\\Sprint 42)."
+        }
+      }
+    }
+  }
+}
