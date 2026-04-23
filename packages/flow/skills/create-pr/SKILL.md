@@ -64,7 +64,23 @@ If the branch has not been pushed yet (GitHub), remind the developer:
 git push -u origin {current_branch}
 ```
 
-### 4. Generate PR description
+### 4. Decide draft vs ready
+
+Before drafting the description, decide whether this PR should open as a draft. Use `createPr.draft` from config as the baseline, then upgrade to draft if any of these signals apply:
+
+Signals the PR should be a draft:
+- Explicit developer intent ("draft PR", "early feedback", "WIP")
+- Commit messages contain `wip`, `wip:`, `[wip]`, or `draft`
+- Acceptance criteria are not all checked off on the linked work item
+- Tests are known to be failing or missing for new code paths
+- The branch has < 2 commits or the diff is clearly incomplete (e.g. scaffolding only, TODOs in changed files)
+- Linked work item is still in an early state (e.g. `Active`, `In Progress` with open sub-tasks)
+
+If any signal fires, set `draft = true` regardless of the config default. Include the reason in the preview so the developer can override.
+
+This logic applies equally to ADO and GitHub — both support draft PRs (`az repos pr create --draft` and `gh pr create --draft`).
+
+### 5. Generate PR description
 
 Using the PR template (`createPr.template` or `templates/pr-description.md`), fill in:
 
@@ -74,14 +90,15 @@ Using the PR template (`createPr.template` or `templates/pr-description.md`), fi
 - **Work item link**: `AB#{id}` (ADO) or `Closes #{id}` (GitHub)
 - **Notes for reviewers**: trade-offs made, areas needing extra attention
 
-### 5. Preview and confirm
+### 6. Preview and confirm
 
-Show the complete PR title and description to the developer. Wait for approval or edits.
+Show the complete PR title, draft decision, and description to the developer. Wait for approval or edits.
 
 ```
 --- PR PREVIEW ---
 
 Title:  Password reset flow (#42)
+Draft:  yes  (reason: 2 of 4 acceptance criteria not yet checked)
 
 Description:
   ## Summary
@@ -104,19 +121,30 @@ Description:
   - Token storage uses Redis with a 1-hour TTL (see `auth/reset.ts:42`)
   - User enumeration protection: same response shown for registered and unregistered emails
 
-Open this PR? (yes / edit / cancel)
+Open this PR? (yes / edit / ready instead of draft / cancel)
 ```
 
-### 6. Open the PR
+### 7. Open the PR
 
 **ADO:**
+
+For a ready PR:
 ```bash
 az repos pr create \
   --title "{title}" \
   --description "{description}" \
   --source-branch {current_branch} \
-  --target-branch {target_branch} \
-  --draft {true|false}
+  --target-branch {target_branch}
+```
+
+For a draft PR (same pattern as GitHub):
+```bash
+az repos pr create \
+  --draft \
+  --title "{title}" \
+  --description "{description}" \
+  --source-branch {current_branch} \
+  --target-branch {target_branch}
 ```
 
 If default reviewers are configured, add them:
@@ -146,7 +174,7 @@ gh pr create \
 
 Issue linking is handled by `Closes #{id}` in the PR body — GitHub auto-links it and will close the issue when the PR is merged.
 
-### 7. Confirm
+### 8. Confirm
 
 Report the PR URL and remind the developer to assign reviewers if none were set via config.
 
@@ -194,3 +222,4 @@ Report the PR URL and remind the developer to assign reviewers if none were set 
 - **ADO**: `AB#{id}` in the description is the auto-linking syntax. Always include it.
 - **GitHub**: `Closes #{id}` will auto-close the linked issue on merge. Use `Relates to #{id}` if you do not want that behaviour.
 - **ADO**: If `az repos` commands fail, verify the `azure-devops` extension is installed: `az extension add --name azure-devops`.
+- **Draft mode is proactive on both trackers**: the skill upgrades to draft when signals suggest partial work (unchecked ACs, WIP commits, failing tests), even if `createPr.draft` is `false` in config. The developer can override in the preview.

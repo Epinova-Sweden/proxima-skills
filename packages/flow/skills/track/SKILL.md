@@ -35,7 +35,7 @@ Read `.claude/workflow-config.json`. Extract:
 - If ADO: `ado.org`, `ado.project`
 - If GitHub: `github.owner`, `github.repo`
 - `track.defaultType` (default: `"Task"`)
-- `track.defaultState` (default: `"Done"`)
+- `track.defaultState` (optional override; if unset, auto-detect — see Step 5)
 - `track.defaultTags` (default: `["unplanned"]`)
 - `track.areaPath`, `track.iterationPath` (ADO only, optional)
 
@@ -147,10 +147,30 @@ az boards work-item create \
     "System.Tags={tags}"
 ```
 
-Then transition to Done:
-```bash
-az boards work-item update --id {id} --state "Done"
-```
+Then transition to a terminal state.
+
+ADO process templates differ — Agile uses `Closed`, Basic uses `Done`, Scrum uses `Done`, CMMI uses `Closed`. Auto-detect the valid state rather than hard-coding:
+
+1. Query the valid states for this work item type:
+   ```bash
+   az boards work-item-type show \
+     --process "{process}" \
+     --type "{type}" \
+     --query "states[].name"
+   ```
+   If `process` isn't known, fall back to listing states from an existing work item of the same type in the project.
+
+2. Pick the terminal state using this priority:
+   a. `track.defaultState` from config, if set and present in the returned list
+   b. First match from: `Done`, `Closed`, `Completed`, `Resolved`
+   c. If none match, show the valid states to the developer and ask which to use
+
+3. Apply it:
+   ```bash
+   az boards work-item update --id {id} --state "{resolved_state}"
+   ```
+
+If `track.defaultState` is set but not in the valid list, warn the developer and fall back to the priority list above.
 
 **GitHub:**
 
@@ -196,13 +216,15 @@ Report the created item ID and URL.
   },
   "track": {
     "defaultType": "Task",
-    "defaultState": "Done",
+    "defaultState": "Closed",
     "defaultTags": ["unplanned"],
     "areaPath": "YourProject\\TeamArea",
     "iterationPath": "YourProject\\Current Sprint"
   }
 }
 ```
+
+`defaultState` is optional — omit it to let the skill auto-detect the terminal state from the work item type. Set it only when you need to force a specific state (e.g. your process uses a custom terminal state).
 
 **GitHub example:**
 ```json
@@ -226,3 +248,4 @@ Report the created item ID and URL.
 - If multiple unrelated changes are found in the commit range, suggest creating separate items rather than one catch-all ticket.
 - The created item is intentionally closed/Done — it exists for traceability, not active tracking.
 - **GitHub**: GitHub does not have work item types like ADO. Use labels to convey type (`bug`, `tech-debt`, `enhancement`).
+- **ADO state names vary by process template** (Agile → `Closed`, Basic/Scrum → `Done`, CMMI → `Closed`). The skill auto-detects valid states; set `track.defaultState` only if you need to force a specific one.

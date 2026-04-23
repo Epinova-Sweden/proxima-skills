@@ -127,16 +127,14 @@ _(append dated entries as decisions are made)_
 - **2026-04-23** — Finished the ADO mirror. `/track` on ADO created Task #19972 from the logger commit; `/status 19941` filtered on `AB#19941` and posted a discussion comment; `/create-pr` opened PR !12126 via `az repos pr create`. Every command path in every skill now verified on both trackers — Step 3 of Next steps is complete.
 - **2026-04-23** — **Finding:** `/track` default state `"Done"` is not valid in this ADO project — the project's process template uses `"Closed"` as the terminal state (likely Agile or CMMI). Claude improvised and retried with `"Closed"`, which worked. Follow-up work needed in the skill: either query valid states via `az boards work-item-type show` before writing, or make the default configurable per project via `track.defaultState` (schema already supports this).
 - **2026-04-23** — **Finding:** `/create-pr` on GitHub proactively offers draft mode when the PR is clearly partial, but the ADO path does not. `az repos pr create` supports `--draft`, so this is just a consistency gap in the skill prompt for ADO. Small polish item.
+- **2026-04-23** — Resolved `/track` state-mapping finding. Updated `track/SKILL.md` so `track.defaultState` is optional; Step 5 now queries valid states via `az boards work-item-type show` and picks the terminal state by priority (config override → `Done`/`Closed`/`Completed`/`Resolved` → ask developer). Config docs and Notes updated to match.
+- **2026-04-23** — Resolved `/create-pr` draft-mode asymmetry. Added a new Step 4 "Decide draft vs ready" with explicit signals (WIP commits, unchecked ACs, failing tests, partial diffs, early work-item state) that apply to both ADO and GitHub. Preview now shows the draft decision and reason; ADO path has an explicit `--draft` example mirroring GitHub. Notes updated to document the proactive behaviour.
 
 ## Pickup for next session
 
-**Where we left off:** End of day 2026-04-23. **Every skill verified end-to-end on both ADO and GitHub.** Step 3 of Next steps is done.
+**Where we left off:** End of day 2026-04-23. **Every skill verified end-to-end on both ADO and GitHub, and both polish items from today's testing are resolved.** Step 3 of Next steps is done; no unblocked work remains in the plugin itself.
 
-**Two small polish items from today's findings:**
-1. `/track` default state — ADO projects may use `Closed` not `Done`. Either query valid states up front, or document that teams must override `track.defaultState` in `workflow-config.json` when their ADO process template differs from Basic/Scrum.
-2. `/create-pr` ADO path should proactively offer draft mode for clearly-partial PRs, matching the GitHub path's behaviour.
-
-**Natural next step:** move to Step 4 (templates) or Step 5 (CLI installer) in Next steps. Both need decisions from a manager/colleague (see Open questions). The two polish items above can be tackled alongside whichever is picked first, or in a quick standalone cleanup pass.
+**Natural next step:** move to Step 4 (templates), Step 5 (CLI installer), or Step 6 (pilot team). All three are blocked on decisions from a manager/colleague — see Open questions. Recommended first action next session: send a short message summarising the four open questions and asking for answers so Step 4+ can start.
 - **YYYY-MM-DD** — _(example)_ Chose TypeScript for CLI because team is JS-heavy.
 
 ## Working notes

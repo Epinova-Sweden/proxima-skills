@@ -86,8 +86,8 @@ proxima-skills/
 | `/triage` | ✅ Tested | ✅ Tested | Fully implemented. Tested against ADO work item #19941 and GitHub issue #1. |
 | `/plan` | ✅ Tested | ✅ Tested | Tested end-to-end on both trackers. ADO: 5 child Tasks created and linked to parent #19941 via `az boards work-item relation add`. GitHub: 8-task checklist appended to issue #1 with re-estimate 5→8. |
 | `/status` | ✅ Tested | ✅ Tested | Tested on both. GitHub (issue #1): filtered git log to commits containing `#1`, posted structured comment. ADO (#19941): filtered on `AB#19941`, posted discussion comment via `az boards work-item update --discussion`. |
-| `/create-pr` | ✅ Tested | ✅ Tested | Tested on both. GitHub: opened draft PR #3 (skill auto-chose draft mode + `Relates to #1`). ADO: opened PR !12126 via `az repos pr create`, auto-linked via `AB#19941` in title. Known gap: ADO path did not offer draft mode proactively like the GitHub path did. |
-| `/track` | ✅ Tested | ✅ Tested | Tested on both. GitHub: created retroactive issue #2 from two bootstrap commits, auto-created labels. ADO: created Task #19972 from logger commit. **Finding:** ADO project uses `Closed` not `Done` as terminal state — skill's default `"Done"` failed, Claude improvised to `Closed`. Default should be configurable/auto-detected. |
+| `/create-pr` | ✅ Tested | ✅ Tested | Tested on both. GitHub: opened draft PR #3 (skill auto-chose draft mode + `Relates to #1`). ADO: opened PR !12126 via `az repos pr create`, auto-linked via `AB#19941` in title. Draft-mode gap on ADO fixed 2026-04-23 — both trackers now share the same proactive draft heuristics. |
+| `/track` | ✅ Tested | ✅ Tested | Tested on both. GitHub: created retroactive issue #2 from two bootstrap commits, auto-created labels. ADO: created Task #19972 from logger commit. Terminal-state handling fixed 2026-04-23 — skill now auto-detects valid states via `az boards work-item-type show`, with `track.defaultState` as an optional override. |
 
 Test environments confirmed working:
 - **ADO**: `https://dev.azure.com/Epinova-Sweden`, project `Proxima Flow Sandbox`
