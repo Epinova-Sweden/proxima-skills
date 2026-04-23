@@ -183,6 +183,8 @@ Report the PR URL and remind the developer to assign reviewers if none were set 
 
 ## Configuration
 
+Teams drop `.claude/workflow-config.json` in their repo to override defaults. Full schema: `packages/flow/workflow-config.schema.json`.
+
 **ADO example:**
 ```json
 {

@@ -1,6 +1,6 @@
 ---
 name: track
-description: Retroactively create a work item or issue from existing git history — for tech debt fixes, DX improvements, or unplanned work that was merged without a ticket. Supports Azure DevOps and GitHub.
+description: Retroactively create a work item or issue from existing git history. Supports Azure DevOps and GitHub. Run to backfill tickets for tech debt, DX work, or production fixes that shipped without one.
 ---
 
 # /track
@@ -206,6 +206,8 @@ Report the created item ID and URL.
 
 ## Configuration
 
+Teams drop `.claude/workflow-config.json` in their repo to override defaults. Full schema: `packages/flow/workflow-config.schema.json`.
+
 **ADO example:**
 ```json
 {
@@ -249,3 +251,4 @@ Report the created item ID and URL.
 - The created item is intentionally closed/Done — it exists for traceability, not active tracking.
 - **GitHub**: GitHub does not have work item types like ADO. Use labels to convey type (`bug`, `tech-debt`, `enhancement`).
 - **ADO state names vary by process template** (Agile → `Closed`, Basic/Scrum → `Done`, CMMI → `Closed`). The skill auto-detects valid states; set `track.defaultState` only if you need to force a specific one.
+- **ADO**: Descriptions are HTML by default; wrap generated text in `<p>` tags if the project does not use Markdown rendering.

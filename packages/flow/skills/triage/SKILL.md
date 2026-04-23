@@ -34,8 +34,8 @@ Read `.claude/workflow-config.json` if it exists. Extract:
 - If ADO: `ado.org`, `ado.project` (fall back to `az devops configure` defaults)
 - If GitHub: `github.owner`, `github.repo`
 - `triage.template` (fall back to this skill's `../../templates/triage-template.md`)
-- `triage.estimationScale` (fall back to `[0, 1, 2, 3, 5, 8, 13, 21]`)
-- `triage.defaultTags` (fall back to `[]`)
+- `triage.estimationScale` (default: `[0, 1, 2, 3, 5, 8, 13, 21]`)
+- `triage.defaultTags` (default: `[]`)
 
 ### 2. Read the work item
 

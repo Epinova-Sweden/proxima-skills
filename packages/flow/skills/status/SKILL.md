@@ -11,7 +11,7 @@ Summarise recent git commits relevant to a work item and post the summary as a c
 
 Invoke with a work item or issue number: `/status 42`
 
-- Mid-sprint check-in: you want the ticket to reflect current progress
+- Mid-sprint check-in: you want the work item to reflect current progress
 - Before a standup: turn your git history into a readable update
 - After a significant commit or PR merge
 
@@ -113,6 +113,8 @@ Report the comment was posted and show the item URL.
 
 ## Configuration
 
+Teams drop `.claude/workflow-config.json` in their repo to override defaults. Full schema: `packages/flow/workflow-config.schema.json`.
+
 **ADO example:**
 ```json
 {
@@ -147,5 +149,5 @@ Report the comment was posted and show the item URL.
 
 - Never post without developer preview and approval.
 - If no relevant commits are found in the lookback window, say so clearly and ask the developer to provide context manually.
-- Avoid repeating content already present in existing comments on the ticket.
+- Avoid repeating content already present in existing comments on the item.
 - Keep the tone factual and brief — this is an update, not a report.

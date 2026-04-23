@@ -35,7 +35,7 @@ Read `.claude/workflow-config.json`. Extract:
 - `tracker` (default: `"ado"`)
 - If ADO: `ado.org`, `ado.project`
 - If GitHub: `github.owner`, `github.repo`
-- `plan.estimationScale` (fall back to `[0, 1, 2, 3, 5, 8, 13, 21]`)
+- `plan.estimationScale` (default: `[0, 1, 2, 3, 5, 8, 13, 21]`)
 
 ### 2. Read the work item
 
@@ -119,8 +119,7 @@ For each proposed task:
 az boards work-item create \
   --type "Task" \
   --title "{task_title}" \
-  --description "{task_description}" \
-  --project "{project}"
+  --description "{task_description}"
 ```
 
 Link each new task to the parent work item:
@@ -169,6 +168,8 @@ Report what was written and show the item URL.
 
 ## Configuration
 
+Teams drop `.claude/workflow-config.json` in their repo to override defaults. Full schema: `packages/flow/workflow-config.schema.json`.
+
 **ADO example:**
 ```json
 {
@@ -204,3 +205,4 @@ Report what was written and show the item URL.
 - Tasks should be ordered logically — dependencies and foundational work first.
 - If the work item has not been triaged, warn the developer and offer to run `/triage` first.
 - **ADO**: If `az boards work-item relation add` fails, create the tasks and provide the work item URL so the developer can link them manually in the ADO board.
+- **ADO**: Descriptions are HTML by default; wrap generated text in `<p>` tags if the project does not use Markdown rendering.
