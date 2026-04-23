@@ -86,7 +86,7 @@ These are the things that need to happen before the plugin is ready for a real t
 
 - [x] **1. Answer the open questions below** — ADO org/project confirmed. GitHub org/repo confirmed. A few questions (pilot team, templates, CLI language) still need a conversation with a manager or colleague.
 - [x] **2. Try it against a real board (first real test)** — `/triage` confirmed working against ADO (work item #19941) and GitHub (issue #1, proxima-flow-sandbox). Both trackers verified end-to-end.
-- [~] **3. Fill in the remaining four commands** — All four skills written with full ADO and GitHub support. Full forward + reverse flow proven end-to-end on GitHub (`/triage` → `/plan` → `/status` → `/create-pr`, plus `/track`). On ADO, `/triage` and `/plan` are tested; `/status`, `/create-pr`, `/track` written but not yet exercised — though all but `az repos pr create` are covered by already-proven command paths.
+- [x] **3. Fill in the remaining four commands** — All five skills now verified end-to-end on **both** ADO and GitHub. Full forward flow (`/triage → /plan → /status → /create-pr`) and reverse flow (`/track`) proven against real boards and real git history. Two small polish items discovered — see decisions log.
 - [ ] **4. Replace the placeholder templates** — The PR description and Definition of Done are currently generic placeholders. Replace with whatever format the company already uses.
 - [ ] **5. Make it easy to install** — At the moment, installing requires copying files manually. Goal: a one-line command (`npx proxima-skills install flow`) so any team can get started without technical help.
 - [ ] **6. Run it with a pilot team** — Pick one team, have them use it on real work for a sprint or two, and collect feedback against the success criteria below.
@@ -124,20 +124,19 @@ _(append dated entries as decisions are made)_
 - **2026-04-22** — Also retested `/triage` on ADO #19941 after the original triage content was missing. Worked correctly: warned the developer that planning without triage was risky and offered to run `/triage` first — good defensive behaviour.
 - **2026-04-22** — Tested `/track`, `/status`, and `/create-pr` on GitHub end-to-end using seeded commits on `feature/1-password-reset`. `/track` grouped two bootstrap commits into a single issue (#2) and auto-closed it. `/status` correctly filtered git log to only commits referencing `#1` and posted a structured comment. `/create-pr` made two notable judgment calls beyond the written spec: it proactively offered draft mode for clearly-partial work, and chose `Relates to #1` over `Closes #1` to avoid auto-closing the issue on merge. Draft PR #3 opened successfully.
 - **2026-04-22** — End of session. Full forward + reverse flow proven end-to-end on GitHub. ADO has `/triage` and `/plan` verified; `/status`, `/create-pr`, and `/track` written but not yet exercised (only `az repos pr create` is genuinely unverified — all other command paths have been proven). Next session pickup: Option A — mirror the three untested skills on ADO against work item #19941 (already triaged and planned). See *Pickup for next session* below.
+- **2026-04-23** — Finished the ADO mirror. `/track` on ADO created Task #19972 from the logger commit; `/status 19941` filtered on `AB#19941` and posted a discussion comment; `/create-pr` opened PR !12126 via `az repos pr create`. Every command path in every skill now verified on both trackers — Step 3 of Next steps is complete.
+- **2026-04-23** — **Finding:** `/track` default state `"Done"` is not valid in this ADO project — the project's process template uses `"Closed"` as the terminal state (likely Agile or CMMI). Claude improvised and retried with `"Closed"`, which worked. Follow-up work needed in the skill: either query valid states via `az boards work-item-type show` before writing, or make the default configurable per project via `track.defaultState` (schema already supports this).
+- **2026-04-23** — **Finding:** `/create-pr` on GitHub proactively offers draft mode when the PR is clearly partial, but the ADO path does not. `az repos pr create` supports `--draft`, so this is just a consistency gap in the skill prompt for ADO. Small polish item.
 
 ## Pickup for next session
 
-**Where we left off:** End of day 2026-04-22. Proxima Flow proved end-to-end on GitHub. Repository committed to `Epinova-Sweden/proxima-skills`.
+**Where we left off:** End of day 2026-04-23. **Every skill verified end-to-end on both ADO and GitHub.** Step 3 of Next steps is done.
 
-**Natural next step:** Finish the ADO mirror of the three skills that only ran on GitHub.
+**Two small polish items from today's findings:**
+1. `/track` default state — ADO projects may use `Closed` not `Done`. Either query valid states up front, or document that teams must override `track.defaultState` in `workflow-config.json` when their ADO process template differs from Basic/Scrum.
+2. `/create-pr` ADO path should proactively offer draft mode for clearly-partial PRs, matching the GitHub path's behaviour.
 
-1. Open ProximaADO Claude terminal
-2. Make a small commit in ProximaADO that references `AB#19941` (e.g. touch a `src/auth/token.ts`)
-3. Run `/track` → verify retroactive work item created and transitioned to Done
-4. Run `/status 19941` → verify discussion comment posted
-5. Create a feature branch with a commit, push it, run `/create-pr` → the only unverified command path on ADO is `az repos pr create`
-
-**After ADO mirror is done:** move to Step 4 (templates) or Step 5 (CLI installer) in Next steps. Both need decisions from a manager/colleague that are still in the Open questions section.
+**Natural next step:** move to Step 4 (templates) or Step 5 (CLI installer) in Next steps. Both need decisions from a manager/colleague (see Open questions). The two polish items above can be tackled alongside whichever is picked first, or in a quick standalone cleanup pass.
 - **YYYY-MM-DD** — _(example)_ Chose TypeScript for CLI because team is JS-heavy.
 
 ## Working notes

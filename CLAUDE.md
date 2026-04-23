@@ -85,9 +85,9 @@ proxima-skills/
 |---|---|---|---|
 | `/triage` | ✅ Tested | ✅ Tested | Fully implemented. Tested against ADO work item #19941 and GitHub issue #1. |
 | `/plan` | ✅ Tested | ✅ Tested | Tested end-to-end on both trackers. ADO: 5 child Tasks created and linked to parent #19941 via `az boards work-item relation add`. GitHub: 8-task checklist appended to issue #1 with re-estimate 5→8. |
-| `/status` | 📝 Written | ✅ Tested | Tested on GitHub (issue #1): filtered git log to only commits containing `#1`, posted progress comment with structure in-progress/completed/next/blockers. ADO not yet tested (command `az boards work-item update --discussion` already proven by `/plan`). |
-| `/create-pr` | 📝 Written | ✅ Tested | Tested on GitHub: opened draft PR #3 from feature branch. Skill proactively chose draft mode for partial work and `Relates to #1` over `Closes #1` to avoid auto-closing the issue. ADO side (`az repos pr create`) not yet tested — the one genuinely unverified ADO command. |
-| `/track` | 📝 Written | ✅ Tested | Tested on GitHub: created retroactive issue #2 from two bootstrap commits, labels auto-created, issue closed with commit references. ADO not yet tested (commands already proven by `/plan`). |
+| `/status` | ✅ Tested | ✅ Tested | Tested on both. GitHub (issue #1): filtered git log to commits containing `#1`, posted structured comment. ADO (#19941): filtered on `AB#19941`, posted discussion comment via `az boards work-item update --discussion`. |
+| `/create-pr` | ✅ Tested | ✅ Tested | Tested on both. GitHub: opened draft PR #3 (skill auto-chose draft mode + `Relates to #1`). ADO: opened PR !12126 via `az repos pr create`, auto-linked via `AB#19941` in title. Known gap: ADO path did not offer draft mode proactively like the GitHub path did. |
+| `/track` | ✅ Tested | ✅ Tested | Tested on both. GitHub: created retroactive issue #2 from two bootstrap commits, auto-created labels. ADO: created Task #19972 from logger commit. **Finding:** ADO project uses `Closed` not `Done` as terminal state — skill's default `"Done"` failed, Claude improvised to `Closed`. Default should be configurable/auto-detected. |
 
 Test environments confirmed working:
 - **ADO**: `https://dev.azure.com/Epinova-Sweden`, project `Proxima Flow Sandbox`
