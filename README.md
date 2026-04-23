@@ -7,12 +7,12 @@ A Claude Code skill plugin that encodes the Proxima / Epinova dev lifecycle as t
 | Command | Purpose | Status |
 |---|---|---|
 | `/triage <id>` | Enrich a vague work item — description, acceptance criteria, estimate, tags | ✅ Complete |
-| `/plan <id>` | Produce an implementation plan; re-estimate if scope shifted | 🚧 Stub |
-| `/status <id>` | Post a progress update derived from git history | 🚧 Stub |
-| `/create-pr` | Generate a reviewer-focused PR and link it to the work item | 🚧 Stub |
-| `/track` | Retroactively create a work item from existing git history | 🚧 Stub |
+| `/plan <id>` | Produce an implementation plan; re-estimate if scope shifted | ✅ Complete |
+| `/status <id>` | Post a progress update derived from git history | ✅ Complete |
+| `/create-pr` | Generate a reviewer-focused PR and link it to the work item | ✅ Complete |
+| `/track` | Retroactively create a work item from existing git history | ✅ Complete |
 
-> **What works today:** `/triage` is fully implemented and tested against both Azure DevOps and GitHub. The remaining four skills have their structure in place but are not yet ready for use.
+> **What works today:** All five skills are implemented and tested end-to-end against both Azure DevOps and GitHub. The one-line CLI installer and the company DoD / PR templates are still pending — until then, install manually using the steps below.
 
 ## Installation
 
