@@ -38,21 +38,18 @@ References between work items use ID references in descriptions/comments — **n
 
 ## Repository structure
 
-The monorepo is scaffolded and the core files are in place:
-
 ```
 proxima-skills/
 ├── packages/
-│   ├── flow/              # the skill plugin
+│   ├── flow/              # the skill plugin (5 skills, all tested on ADO + GitHub)
 │   │   ├── skills/
-│   │   │   ├── triage/SKILL.md      ← complete; tested on ADO and GitHub
-│   │   │   ├── plan/SKILL.md        ← stub; structure only
-│   │   │   ├── status/SKILL.md      ← stub; structure only
-│   │   │   ├── create-pr/SKILL.md   ← stub; structure only
-│   │   │   └── track/SKILL.md       ← stub; structure only
-│   │   ├── lib/           # ADO client, git helpers, config loader (not yet built)
-│   │   └── templates/     # triage-template.md complete; pr-description.md + dod.md are stubs
-│   └── cli/               # npx proxima-skills install flow (not yet built)
+│   │   │   ├── triage/SKILL.md
+│   │   │   ├── plan/SKILL.md
+│   │   │   ├── status/SKILL.md
+│   │   │   ├── create-pr/SKILL.md
+│   │   │   └── track/SKILL.md
+│   │   └── templates/     # triage-template.md ready; pr-description.md + dod.md are placeholders
+│   └── cli/               # npx proxima-skills install flow (placeholder — TBD)
 ├── CONTEXT.md
 └── README.md
 ```
@@ -68,9 +65,9 @@ proxima-skills/
 
 - **Triage template**: Problem/Request → Expected behaviour → Acceptance criteria
 - **Estimation scale**: Fibonacci 0/1/2/3/5/8/13/21, effort-based (not time), same scale for human and AI work
-- **DoD template**: TBD — needs to be pulled from the company's current standard
-- **Field mappings + state transitions**: TBD — depends on ADO project config; GitHub uses labels + milestone for equivalent fields
-- **PR description format**: TBD — needs to confirm existing company convention
+- **ADO state transitions**: `/track` auto-detects valid terminal state per process template (Done/Closed/Completed/Resolved); override via `track.defaultState`. GitHub uses labels + milestone for equivalent fields.
+- **PR description format**: placeholder — needs to confirm existing company convention
+- **DoD template**: placeholder — needs to be pulled from the company's current standard
 
 ## PoC scope
 
@@ -81,17 +78,19 @@ proxima-skills/
 
 ## What has been built and tested
 
-| Skill | ADO | GitHub | Notes |
+| Skill | ADO | GitHub | Summary |
 |---|---|---|---|
-| `/triage` | ✅ Tested | ✅ Tested | Fully implemented. Tested against ADO work item #19941 and GitHub issue #1. |
-| `/plan` | ✅ Tested | ✅ Tested | Tested end-to-end on both trackers. ADO: 5 child Tasks created and linked to parent #19941 via `az boards work-item relation add`. GitHub: 8-task checklist appended to issue #1 with re-estimate 5→8. |
-| `/status` | ✅ Tested | ✅ Tested | Tested on both. GitHub (issue #1): filtered git log to commits containing `#1`, posted structured comment. ADO (#19941): filtered on `AB#19941`, posted discussion comment via `az boards work-item update --discussion`. |
-| `/create-pr` | ✅ Tested | ✅ Tested | Tested on both. GitHub: opened draft PR #3 (skill auto-chose draft mode + `Relates to #1`). ADO: opened PR !12126 via `az repos pr create`, auto-linked via `AB#19941` in title. Draft-mode gap on ADO fixed 2026-04-23 — both trackers now share the same proactive draft heuristics. |
-| `/track` | ✅ Tested | ✅ Tested | Tested on both. GitHub: created retroactive issue #2 from two bootstrap commits, auto-created labels. ADO: created Task #19972 from logger commit. Terminal-state handling fixed 2026-04-23 — skill now auto-detects valid states via `az boards work-item-type show`, with `track.defaultState` as an optional override. |
+| `/triage` | ✅ Tested | ✅ Tested | Enriches description, ACs, estimate, tags. |
+| `/plan` | ✅ Tested | ✅ Tested | Creates child Tasks (ADO) or a checklist (GitHub); re-estimates if scope shifted. |
+| `/status` | ✅ Tested | ✅ Tested | Posts a progress comment filtered from recent git history. |
+| `/create-pr` | ✅ Tested | ✅ Tested | Generates a reviewer-focused PR; proactively offers draft mode on both trackers. |
+| `/track` | ✅ Tested | ✅ Tested | Retroactively creates + closes a work item from git history; auto-detects terminal state on ADO. |
 
-Test environments confirmed working:
+Test environments:
 - **ADO**: `https://dev.azure.com/Epinova-Sweden`, project `Proxima Flow Sandbox`
 - **GitHub**: `https://github.com/Epinova-Sweden/proxima-flow-sandbox`
+
+Detailed test findings and dated resolutions live in `CONTEXT.md`'s decisions log.
 
 ## Open questions (unresolved)
 
@@ -101,9 +100,5 @@ The following still need a decision from a manager or colleague. See `CONTEXT.md
 - Who is the pilot team?
 - Is there an existing company DoD / PR template to ship as default?
 - Existing ADO PAT flow, or assume `az` CLI?
-
-Resolved questions (see `CONTEXT.md` decisions log for details):
-- ~~Which ADO org + project to target for the PoC?~~ → `Epinova-Sweden / Proxima Flow Sandbox`
-- ~~Which GitHub org/repo to target for the PoC?~~ → `Epinova-Sweden / proxima-flow-sandbox`
 
 Append dated decisions to the `## Decisions log` section of `CONTEXT.md` as these are resolved.

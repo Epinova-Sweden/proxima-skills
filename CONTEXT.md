@@ -61,9 +61,8 @@ proxima-skills/            # monorepo
 │   │   │   ├── status/SKILL.md
 │   │   │   ├── create-pr/SKILL.md
 │   │   │   └── track/SKILL.md
-│   │   ├── lib/           # ADO client, git helpers, config loader
 │   │   └── templates/     # default triage template, PR template, DoD
-│   └── cli/               # npx proxima-skills install flow
+│   └── cli/               # npx proxima-skills install flow (placeholder)
 ├── CONTEXT.md             # this file
 └── README.md
 ```
@@ -74,33 +73,39 @@ proxima-skills/            # monorepo
 
 ## Defaults shipped with the plugin
 
-- **Triage template**: Problem/Request → Expected behavior → Acceptance criteria
+- **Triage template**: Problem/Request → Expected behaviour → Acceptance criteria
 - **Estimation scale**: Fibonacci 0/1/2/3/5/8/13/21, **effort-based** (not time), same scale for human and AI work
-- **DoD template** (TBD — need to pull the company's current one)
-- **Field mappings + state transitions** (TBD — need to confirm per ADO project)
-- **PR description format** (TBD — need to confirm existing convention)
+- **ADO state transitions**: `/track` auto-detects valid terminal state per process template (Done/Closed/Completed/Resolved); override via `track.defaultState`. GitHub uses labels + milestone for equivalent fields.
+- **PR description format**: placeholder — needs to confirm existing company convention
+- **DoD template**: placeholder — needs to be pulled from the company's current standard
 
 ## Next steps
 
-These are the things that need to happen before the plugin is ready for a real team to use. They are listed roughly in order — some can happen in parallel, but the first two are blockers for everything else.
+### ✅ Shipped
+- Skills scaffolded; `/triage` built and tested first
+- ADO + GitHub test environments confirmed (`Epinova-Sweden / Proxima Flow Sandbox` and `proxima-flow-sandbox`)
+- All five skills verified end-to-end on both trackers (forward flow `/triage → /plan → /status → /create-pr` and reverse flow `/track`)
+- Polish items from testing resolved (`/track` terminal-state auto-detect, `/create-pr` ADO draft mode)
+- Five-skill consistency audit + README refresh
 
-- [x] **1. Answer the open questions below** — ADO org/project confirmed. GitHub org/repo confirmed. A few questions (pilot team, templates, CLI language) still need a conversation with a manager or colleague.
-- [x] **2. Try it against a real board (first real test)** — `/triage` confirmed working against ADO (work item #19941) and GitHub (issue #1, proxima-flow-sandbox). Both trackers verified end-to-end.
-- [x] **3. Fill in the remaining four commands** — All five skills now verified end-to-end on **both** ADO and GitHub. Full forward flow (`/triage → /plan → /status → /create-pr`) and reverse flow (`/track`) proven against real boards and real git history. Two small polish items discovered — see decisions log.
-- [ ] **4. Replace the placeholder templates** — The PR description and Definition of Done are currently generic placeholders. Replace with whatever format the company already uses.
-- [ ] **5. Make it easy to install** — At the moment, installing requires copying files manually. Goal: a one-line command (`npx proxima-skills install flow`) so any team can get started without technical help.
-- [ ] **6. Run it with a pilot team** — Pick one team, have them use it on real work for a sprint or two, and collect feedback against the success criteria below.
+### 🔴 Blocked on external input
+- **Replace placeholder templates** (`pr-description.md`, `dod.md`) — needs company DoD + PR template convention
+- **Build CLI installer** (`npx proxima-skills install flow`) — needs TypeScript vs Python decision
+- **Pilot team rollout** — needs team selection; run for a sprint or two and collect feedback against the success criteria below
+
+### 🟢 Unblocked next action
+Draft a short message to a manager/colleague covering the four open questions below. Answers unblock everything in the Blocked block.
 
 ---
 
 ## Open questions for manager / colleague
 
-- [x] Which ADO org + project do we target for the PoC? → **Epinova-Sweden / Proxima Flow Sandbox** (`https://dev.azure.com/Epinova-Sweden`)
-- [x] Which GitHub org/repo do we target for the PoC? → **Epinova-Sweden / proxima-flow-sandbox** (`https://github.com/Epinova-Sweden/proxima-flow-sandbox`)
-- [ ] Language/runtime for the CLI — TypeScript or Python?
-- [ ] Who is the pilot team? Need real tickets to dogfood against.
-- [ ] Is there an existing company DoD / PR template I should ship as the default?
-- [ ] Do we already have an ADO PAT flow the team uses, or do we assume `az` CLI?
+- Language/runtime for the CLI — TypeScript or Python?
+- Who is the pilot team? Need real tickets to dogfood against.
+- Is there an existing company DoD / PR template I should ship as the default?
+- Do we already have an ADO PAT flow the team uses, or do we assume `az` CLI?
+
+Resolved questions are captured in the decisions log below.
 
 ## Success criteria (from spec)
 
@@ -129,14 +134,4 @@ _(append dated entries as decisions are made)_
 - **2026-04-23** — **Finding:** `/create-pr` on GitHub proactively offers draft mode when the PR is clearly partial, but the ADO path does not. `az repos pr create` supports `--draft`, so this is just a consistency gap in the skill prompt for ADO. Small polish item.
 - **2026-04-23** — Resolved `/track` state-mapping finding. Updated `track/SKILL.md` so `track.defaultState` is optional; Step 5 now queries valid states via `az boards work-item-type show` and picks the terminal state by priority (config override → `Done`/`Closed`/`Completed`/`Resolved` → ask developer). Config docs and Notes updated to match.
 - **2026-04-23** — Resolved `/create-pr` draft-mode asymmetry. Added a new Step 4 "Decide draft vs ready" with explicit signals (WIP commits, unchecked ACs, failing tests, partial diffs, early work-item state) that apply to both ADO and GitHub. Preview now shows the draft decision and reason; ADO path has an explicit `--draft` example mirroring GitHub. Notes updated to document the proactive behaviour.
-
-## Pickup for next session
-
-**Where we left off:** End of day 2026-04-23. **Every skill verified end-to-end on both ADO and GitHub, and both polish items from today's testing are resolved.** Step 3 of Next steps is done; no unblocked work remains in the plugin itself.
-
-**Natural next step:** move to Step 4 (templates), Step 5 (CLI installer), or Step 6 (pilot team). All three are blocked on decisions from a manager/colleague — see Open questions. Recommended first action next session: send a short message summarising the four open questions and asking for answers so Step 4+ can start.
-- **YYYY-MM-DD** — _(example)_ Chose TypeScript for CLI because team is JS-heavy.
-
-## Working notes
-
-_(scratch space — rough thoughts, things to revisit, dead ends)_
+- **2026-04-23** — Five-skill consistency audit: normalised config-fallback wording, removed redundant `--project` flag from `/plan`, replaced "ticket" with "work item" in `/status`, realigned `/track`'s YAML description to match the other four skills' pattern, added Configuration intro blurb to four skills, added HTML-in-ADO-description note to `/plan` and `/track`. README refreshed to reflect all five skills as complete. CLAUDE.md and CONTEXT.md cleaned up: stale "stub" annotations removed, resolved open questions pruned, "Pickup for next session" and "Working notes" sections retired now that Next steps has a clearer Shipped / Blocked / Unblocked structure.
